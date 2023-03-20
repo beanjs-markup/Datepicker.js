@@ -201,17 +201,18 @@ export default class Datepicker {
     this._onclick = this._onclick.bind(this)
 
     // on focus (or click), open the datepicker
-    if ('input' !== this._el.tagName.toLowerCase()) {
-      this._el.addEventListener('click', () => this.toggle())
-    } else {
-      this._el.addEventListener('focus', () => this.open())
-    }
+    // if ('input' !== this._el.tagName.toLowerCase()) {
+    //   this._el.addEventListener('click', () => this.toggle())
+    // } else {
+    //   this._el.addEventListener('focus', () => this.open())
+    // }
 
     // if we click outside of our element, hide it
-    document.addEventListener('mousedown', (e) => {
-      if (!this.node.contains(e.target)) this.hide()
-    })
+    // document.addEventListener('mousedown', (e) => {
+    //   if (!this.node.contains(e.target)) this.hide()
+    // })
 
+    this._el.addEventListener('click', () => this.toggle())
     // don't actually select text, please
     this.node.onselectstart = () => false
 
@@ -343,9 +344,9 @@ export default class Datepicker {
       this.render()
 
       // maybe hide the calendar
-      if (!multiple && (!ranged || this._isDragging)) {
-        this.hide()
-      }
+      // if (!multiple && (!ranged || this._isDragging)) {
+      //   this.hide()
+      // }
     }
 
     // reset this stuff
@@ -514,6 +515,8 @@ export default class Datepicker {
    * @param {String|Date} [date=openOn] The date to open to
    */
   open(date) {
+    if(this._isOpen) return
+
     let selected = [].concat(this.getDate())
     date = date || this._opts.openOn || this._month
 
@@ -537,7 +540,7 @@ export default class Datepicker {
     }
 
     // set/reset time
-    this.setTime(!!this._selected.length)
+    // this.setTime(!!this._selected.length)
 
     // set calendar to date and show it
     this.goToDate(date)
@@ -794,7 +797,7 @@ export default class Datepicker {
    * @param {Date|Array} date Date(s) to set the time to
    */
   setDate(date) {
-    this._selected = []
+    this._selected = [date]
     this.addDate(date)
   }
 
@@ -826,17 +829,21 @@ export default class Datepicker {
 
       // correct params
       part = part === 'end' ? part : 'start'
-      hour = hour ? parseInt(hour, 10) : false
-      minute = minute ? parseInt(minute, 10) : false
+      hour = hour!=null ? parseInt(hour, 10) : false
+      minute = minute!=null ? parseInt(minute, 10) : false
 
       // set hours
-      if (hour && !isNaN(hour)) {
+      if (hour!=false && !isNaN(hour)) {
         this._time[part][0] = hour
+      }else if(hour===0){
+        this._time[part][0]=0
       }
 
       // set minutes
-      if (minute && !isNaN(minute)) {
+      if (minute!=false && !isNaN(minute)) {
         this._time[part][1] = minute
+      }else if(minute===0){
+        this._time[part][1]=0
       }
     }
 
